@@ -22,18 +22,13 @@ async function run() {
     try{
         const userCollection = client.db('wildzyReview').collection('usersReview');
         const servicesCollection = client.db('wildzyReview').collection('services');
-        // const user = {name: 'Hamim Hossain', email: 'hamim@gmail.com', age: 77, subject: 'computer science'}
-
-        // const userTwo ={name: 'Habil Hasan ', email: 'habil@gmail.com', age: 88, subjext: 'Bangla, english'}
-
-        // const result = await userCollection.insertOne(user);
-        // const result2 = await userCollection.insertOne(userTwo);
-        // console.log(result, result2);
+        
         app.get('/services', async(req, res) => {
             const query = {};
-            const cursor = servicesCollection.find.query;
+            console.log(query)
+            const cursor = servicesCollection.find(query);
             const services = await cursor.toArray();
-            res.send(services)
+            res.send(services);
         })
 
     }
