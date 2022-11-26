@@ -23,7 +23,17 @@ async function run() {
         const userCollection = client.db('wildzyReview').collection('usersReview');
         const servicesCollection = client.db('wildzyReview').collection('services');
         
+        //---home page services---//
         app.get('/services', async(req, res) => {
+            const query = {};
+            console.log(query)
+            const cursor = servicesCollection.find(query).limit(3);
+            const services = await cursor.toArray();
+            res.send(services);
+        })
+
+        //---all services---//
+        app.get('/allServices', async(req, res) => {
             const query = {};
             console.log(query)
             const cursor = servicesCollection.find(query);
