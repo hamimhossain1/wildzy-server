@@ -27,9 +27,10 @@ async function run() {
         app.get('/services', async(req, res) => {
             const query = {};
             console.log(query)
-            const cursor = servicesCollection.find(query).limit(3);
+            const cursor = servicesCollection.find(query);
             const services = await cursor.toArray();
-            res.send(services);
+            const latestData = services.reverse().slice(0, 3);
+            res.send(latestData);
         })
 
         //---all services api---//
@@ -38,6 +39,13 @@ async function run() {
             const cursor = servicesCollection.find(query);
             const services = await cursor.toArray();
             res.send(services);
+        })
+
+        //--- add new service---//
+        app.post('/allServices', async(req, res) => {
+            const service = req.body;
+            const addService = await servicesCollection.insertOne(service);
+            res.send(addService)
         })
         
         //---service dynamic with id api---//
@@ -72,18 +80,11 @@ async function run() {
             res.send(userReview);
         })
 
-        //---by email---//
-        // app.get('/userReview/:email', async(req, res) => {
-        //     const userEmail = req.params.email;
-        //     const query = {userEmail};
-        //     const cursor = userCollection.find(query);
-        //     const findByEmail = await cursor.toArray();
-        //     res.send(findByEmail);
-        // })
+       
 
 
 
-        //---by email---//
+        //--- api by email---//
         app.get('/userReview', async(req, res) => {
             let query = {}
             if(req.query.email){
@@ -91,7 +92,6 @@ async function run() {
                     email: req.query.email
                 }
             }
-            console.log(res.query)
             const cursor = userCollection.find(query);
             const userReviewByEmail = await cursor.toArray();
             res.send(userReviewByEmail);
