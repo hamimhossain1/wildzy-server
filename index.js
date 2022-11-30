@@ -55,6 +55,48 @@ async function run() {
             res.send(result);
         })
 
+        // app.get('/userReview', async(req, res) => {
+        //     const query = {};
+        //     const cursor = userCollection.find(query);
+        //     const userReview = await cursor.toArray();
+        //     res.send(userReview);
+        // })
+
+
+        //---by serviceId---//
+        app.get('/userReview/:serviceId', async(req, res) => {
+            const serviceId = req.params.serviceId;
+            const query = {serviceId}
+            const cursor = userCollection.find(query);
+            const userReview = await cursor.toArray();
+            res.send(userReview);
+        })
+
+        //---by email---//
+        // app.get('/userReview/:email', async(req, res) => {
+        //     const userEmail = req.params.email;
+        //     const query = {userEmail};
+        //     const cursor = userCollection.find(query);
+        //     const findByEmail = await cursor.toArray();
+        //     res.send(findByEmail);
+        // })
+
+
+
+        //---by email---//
+        app.get('/userReview', async(req, res) => {
+            let query = {}
+            if(req.query.email){
+                query = {
+                    email: req.query.email
+                }
+            }
+            console.log(res.query)
+            const cursor = userCollection.find(query);
+            const userReviewByEmail = await cursor.toArray();
+            res.send(userReviewByEmail);
+        })
+
 
 
 
