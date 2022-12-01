@@ -80,11 +80,7 @@ async function run() {
             res.send(userReview);
         })
 
-       
-
-
-
-        //--- api by email---//
+        //--- api by email for my review---//
         app.get('/userReview', async(req, res) => {
             let query = {}
             if(req.query.email){
@@ -95,6 +91,14 @@ async function run() {
             const cursor = userCollection.find(query);
             const userReviewByEmail = await cursor.toArray();
             res.send(userReviewByEmail);
+        })
+
+        //--- api by email for my review---//
+        app.delete('/userReview/:id', async(req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id)};
+            const result = await userCollection.deleteOne(query);
+            res.send(result);
         })
 
 
