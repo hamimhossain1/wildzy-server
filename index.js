@@ -93,6 +93,43 @@ async function run() {
             res.send(userReviewByEmail);
         })
 
+        //---edit review 1st way---//
+        // app.patch('/userReview', async(req, res) => {
+        //     let query = {}
+        //     if(req.query.email){
+        //         query = {
+        //             email: req.query.email
+        //         }
+        //     }
+        //     const review = req.body.review;
+        //     console.log(review)
+        //     const updateDoc = {
+        //         $set:{
+        //             review: review
+        //         }
+        //     }
+        //     const result = await userCollection.updateOne(query, updateDoc);
+        //     res.send(result);
+        // })
+
+        //---edit review 2nd way---//
+        app.put("/userReview/:id",  async (req, res) => {
+            const id = req.params.id;
+            const review = req.body.editedReview;
+            // const review = req.body?.review;
+            console.log(review)
+            const query = { _id: ObjectId(id) };
+            const updateDoc = {
+              $set: {
+                review: review,
+              },
+            };
+            const result = await userCollection.updateOne(query, updateDoc);
+            res.send(result);
+          });
+
+
+
         //--- api by email for my review---//
         app.delete('/userReview/:id', async(req, res) => {
             const id = req.params.id;
@@ -100,6 +137,25 @@ async function run() {
             const result = await userCollection.deleteOne(query);
             res.send(result);
         })
+
+
+
+        
+
+        // app.patch("/reviews/:id",  async (req, res) => {
+        //     const id = req.params.id;
+        //     const rating = req.body?.rating;
+        //     const review = req.body?.review;
+        //     const query = { _id: ObjectId(id) };
+        //     const updateDoc = {
+        //       $set: {
+        //         rating: rating,
+        //         review: review,
+        //       },
+        //     };
+        //     const result = await reviewsCollection.updateOne(query, updateDoc);
+        //     res.send(result);
+        //   });
 
 
 
