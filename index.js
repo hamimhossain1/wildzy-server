@@ -1,5 +1,6 @@
 const express = require('express');
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
@@ -10,9 +11,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// name: wildzy
-// password: neK9x6cwKHY45XLL
-
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.8l0k6oj.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -22,6 +20,14 @@ async function run() {
     try{
         const userCollection = client.db('wildzyReview').collection('usersReview');
         const servicesCollection = client.db('wildzyReview').collection('services');
+
+        //---JWT TOKEN---//
+        app.post('/jwt', (req, res) => {
+            const user = req.body;
+            // console.log(user);
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '7d'});
+            res.send({token});
+        })
         
         //---home page services api---//
         app.get('/services', async(req, res) => {
@@ -63,14 +69,6 @@ async function run() {
             res.send(result);
         })
 
-        // app.get('/userReview', async(req, res) => {
-        //     const query = {};
-        //     const cursor = userCollection.find(query);
-        //     const userReview = await cursor.toArray();
-        //     res.send(userReview);
-        // })
-
-
         //---by serviceId---//
         app.get('/userReview/:serviceId', async(req, res) => {
             const serviceId = req.params.serviceId;
@@ -92,25 +90,6 @@ async function run() {
             const userReviewByEmail = await cursor.toArray();
             res.send(userReviewByEmail);
         })
-
-        //---edit review 1st way---//
-        // app.patch('/userReview', async(req, res) => {
-        //     let query = {}
-        //     if(req.query.email){
-        //         query = {
-        //             email: req.query.email
-        //         }
-        //     }
-        //     const review = req.body.review;
-        //     console.log(review)
-        //     const updateDoc = {
-        //         $set:{
-        //             review: review
-        //         }
-        //     }
-        //     const result = await userCollection.updateOne(query, updateDoc);
-        //     res.send(result);
-        // })
 
         //---edit review 2nd way---//
         app.put("/userReview/:id",  async (req, res) => {
