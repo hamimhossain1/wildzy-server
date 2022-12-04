@@ -16,6 +16,23 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@clu
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+//--jwt verification--//
+function verifyJWT(req, res, next){
+    console.log(req.headers.authorization);
+    const authHeader = req.headers.authorization;
+    if(!authHeader){
+        res.status(401).send({message: 'Unauthorized access'})
+    }
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function(err, decoded){
+        if(err){
+            res.status(401).send({message: 'unauthorized access'})
+        }
+        req.decoded = decoded;
+        next();
+    })
+}
+
 async function run() {
     try{
         const userCollection = client.db('wildzyReview').collection('usersReview');
@@ -79,7 +96,10 @@ async function run() {
         })
 
         //--- api by email for my review---//
-        app.get('/userReview', async(req, res) => {
+        app.get('/userReview', verifyJWT, async(req, res) => {
+            
+            // console.log(req.headers.authorization);
+
             let query = {}
             if(req.query.email){
                 query = {
