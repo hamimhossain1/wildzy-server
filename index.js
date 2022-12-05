@@ -18,7 +18,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 //--jwt verification--//
 function verifyJWT(req, res, next){
-    console.log(req.headers.authorization);
+    // console.log(req.headers.authorization);
     const authHeader = req.headers.authorization;
     if(!authHeader){
         res.status(401).send({message: 'Unauthorized access'})
@@ -49,7 +49,7 @@ async function run() {
         //---home page services api---//
         app.get('/services', async(req, res) => {
             const query = {};
-            console.log(query)
+            // console.log(query)
             const cursor = servicesCollection.find(query);
             const services = await cursor.toArray();
             const latestData = services.reverse().slice(0, 3);
@@ -82,7 +82,9 @@ async function run() {
         //---user review api---//
         app.post('/userReview', async(req, res) => {
             const review = req.body;
+            review.created_at = new Date()
             const result = await userCollection.insertOne(review);
+
             res.send(result);
         })
 
@@ -90,7 +92,7 @@ async function run() {
         app.get('/userReview/:serviceId', async(req, res) => {
             const serviceId = req.params.serviceId;
             const query = {serviceId}
-            const cursor = userCollection.find(query);
+            const cursor = userCollection.find(query).sort({"created_at": -1});
             const userReview = await cursor.toArray();
             res.send(userReview);
         })
@@ -99,6 +101,12 @@ async function run() {
         app.get('/userReview', verifyJWT, async(req, res) => {
             
             // console.log(req.headers.authorization);
+
+            const decoded = req.decoded;
+            // console.log('inside orders api', decoded);
+            if(decoded.email !== req.query.email){
+                res.status(403).send({message: 'unauthorized access'})
+            }
 
             let query = {}
             if(req.query.email){
@@ -116,7 +124,7 @@ async function run() {
             const id = req.params.id;
             const review = req.body.editedReview;
             // const review = req.body?.review;
-            console.log(review)
+            // console.log(review)
             const query = { _id: ObjectId(id) };
             const updateDoc = {
               $set: {
